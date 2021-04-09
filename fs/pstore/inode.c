@@ -427,6 +427,13 @@ int pstore_mkfile(struct dentry *root, struct pstore_record *record)
 	}
 #endif
 
+#ifdef CONFIG_PSTORE_LAST_KMSG
+	if (record->type == PSTORE_TYPE_CONSOLE) {
+		console_buffer = private->record->buf;
+		console_bufsize = size;
+	}
+#endif
+
 	return 0;
 
 fail_private:
@@ -512,7 +519,6 @@ static struct file_system_type pstore_fs_type = {
 static int __init init_pstore_fs(void)
 {
 	int err;
-
 #ifdef CONFIG_PSTORE_LAST_KMSG
 	struct proc_dir_entry *last_kmsg_entry = NULL;
 #endif
@@ -527,12 +533,13 @@ static int __init init_pstore_fs(void)
 		sysfs_remove_mount_point(fs_kobj, "pstore");
 
 #ifdef CONFIG_PSTORE_LAST_KMSG
-	last_kmsg_entry = proc_create_data("last_kmsg", S_IFREG | 0444,
-				NULL, &last_kmsg_fops, NULL);
-	if (!last_kmsg_entry)
+	last_kmsg_entry = proc_create_data("last_kmsg", S_IFREG | S_IRUGO,
+			NULL, &last_kmsg_fops, NULL);
+	if (!last_kmsg_entry) {
 		pr_err("Failed to create last_kmsg\n");
+		goto out;
+	}
 #endif
-
 out:
 	return err;
 }

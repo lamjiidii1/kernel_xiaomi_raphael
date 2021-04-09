@@ -21,6 +21,7 @@
 
 #ifdef CONFIG_TAS2557_REGMAP
 
+#define DEBUG
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
@@ -54,7 +55,7 @@
 #ifdef ENABLE_TILOAD
 #include "tiload.h"
 #endif
-#include "../spk-id.h"
+#include <linux/mfd/spk-id.h>
 
 #define LOW_TEMPERATURE_GAIN 6
 #define LOW_TEMPERATURE_COUNTER 12

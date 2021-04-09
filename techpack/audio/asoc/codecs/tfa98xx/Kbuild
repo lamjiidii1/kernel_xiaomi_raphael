@@ -6,13 +6,10 @@ else
 	KERNEL_BUILD := 0
 endif
 
-
-
 ifeq ($(KERNEL_BUILD), 1)
 	# These are configurable via Kconfig for kernel-based builds
 	# Need to explicitly configure for Android-based builds
-	AUDIO_BLD_DIR := $(ANDROID_BUILD_TOP)/kernel/msm-4.14
-	AUDIO_ROOT := $(AUDIO_BLD_DIR)/techpack/audio
+	AUDIO_ROOT := techpack/audio
 endif
 
 ifeq ($(KERNEL_BUILD), 0)
@@ -65,6 +62,7 @@ ifdef CONFIG_SND_SOC_TFA9874
 	TFA98XX_OBJS += src/tfa_container.o
 	TFA98XX_OBJS += src/tfa_dsp.o
 	TFA98XX_OBJS += src/tfa_init.o
+	#TFA98XX_OBJS += src/tfa_debug.o
 endif
 
 LINUX_INC += -Iinclude/linux
@@ -73,7 +71,7 @@ INCS +=	$(COMMON_INC) \
 	$(UAPI_INC) \
 	$(TFA_INC)
 
-EXTRA_CFLAGS += -I$(src)/inc
+EXTRA_CFLAGS += $(INCS)
 
 CDEFINES +=	-DANI_LITTLE_BYTE_ENDIAN \
 		-DANI_LITTLE_BIT_ENDIAN \
@@ -84,7 +82,12 @@ CDEFINES +=	-DANI_LITTLE_BYTE_ENDIAN \
 		-Wall\
 		-Werror\
 		-D__linux__ \
-		-DTFA_NON_DSP_SOLUTION
+		-DDEBUG
+
+
+ifdef CONFIG_MACH_XIAOMI_RAPHAEL
+	CDEFINES += -DTFA_NON_DSP_SOLUTION
+endif
 
 KBUILD_CPPFLAGS += $(CDEFINES)
 
@@ -113,3 +116,4 @@ endif
 obj-$(CONFIG_SND_SOC_TFA9874)    += tfa98xx_dlkm.o
 tfa98xx_dlkm-y := $(TFA98XX_OBJS)
 # inject some build related information
+DEFINES += -DBUILD_TIMESTAMP=\"$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')\"
