@@ -10,6 +10,8 @@
  * GNU General Public License for more details.
  */
 
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -95,8 +97,6 @@ struct nqx_dev {
 	u8 *kbuf;
 	struct nqx_platform_data *pdata;
 };
-
-extern char *saved_command_line;
 
 static int nfcc_reboot(struct notifier_block *notifier, unsigned long val,
 			void *v);
@@ -1128,12 +1128,6 @@ static int nqx_probe(struct i2c_client *client,
 
 	dev_dbg(&client->dev, "%s: enter\n", __func__);
 
-	if (strnstr(saved_command_line, "androidboot.hwc=India",
-					strlen(saved_command_line)) != NULL) {
-		dev_err(&client->dev, "%s:NFC HWC India : Do not probe nqx\n", __func__);
-		return -ENODEV;
-	}
-
 	if (client->dev.of_node) {
 		platform_data = devm_kzalloc(&client->dev,
 			sizeof(struct nqx_platform_data), GFP_KERNEL);
@@ -1531,11 +1525,17 @@ static int nfcc_reboot(struct notifier_block *notifier, unsigned long val,
 	return NOTIFY_OK;
 }
 
+extern char *saved_command_line;
 /*
  * module load/unload record keeping
  */
 static int __init nqx_dev_init(void)
 {
+	if (strnstr(saved_command_line, "androidboot.hwc=India",
+				strlen(saved_command_line)) != NULL) {
+		pr_info("%s:NFC HWC India : Do not init nqx\n", __func__);
+		return -1;
+	}
 	return i2c_add_driver(&nqx);
 }
 module_init(nqx_dev_init);
