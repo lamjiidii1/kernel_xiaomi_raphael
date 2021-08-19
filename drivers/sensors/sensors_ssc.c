@@ -128,6 +128,7 @@ fail:
 	} else {
 		dev_dbg(&pdev->dev, "%s: SLPI image is loaded\n", __func__);
 	}
+	return;
 }
 
 static void slpi_loader_do(struct platform_device *pdev)
