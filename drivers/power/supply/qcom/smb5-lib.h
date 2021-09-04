@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-/* Copyright (c) 2018-2020 The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
-=======
 /* Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
->>>>>>> origin/android11-base
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
