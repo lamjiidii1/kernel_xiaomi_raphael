@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2021, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -37,7 +37,7 @@
 		compatible = "android,firmware";
 		vbmeta {
 		   compatible = "android,vbmeta";
-		   parts = "vbmeta,boot,system,vendor,dtbo,recovery";
+		   parts = "vbmeta,boot,system,vendor,dtbo";
 		};
 
 		fstab {
@@ -48,7 +48,7 @@
 			"/dev/block/platform/soc/7824900.sdhci/by-name/vendor";
 		      type = "ext4";
 		      mnt_flags = "ro,barrier=1,discard";
-		      fsmgr_flags = "wait,avb";
+		      fsmgr_flags = "wait,avb,slotselect";
 		      status = "ok";
 		   };
 		};
@@ -122,7 +122,7 @@
 		dump_mem: mem_dump_region {
 			compatible = "shared-dma-pool";
 			reusable;
-			size = <0x400000>;
+			size = <0 0x400000>;
 		};
 
 		gpu_mem: gpu_region@0 {
@@ -546,7 +546,7 @@
 		qcom,scaling-lower-bus-speed-mode = "DDR52";
 
 		 /* DLL HSR settings. Refer go/hsr - <Target> DLL settings */
-		qcom,dll-hsr-list = <0x00076400 0x0 0x0 0x0 0x00040874>;
+		qcom,dll-hsr-list = <0x00076400 0x0 0x0 0x0 0x00040868>;
 
 		qcom,nonremovable;
 		status = "disabled";
@@ -588,7 +588,7 @@
 		clock-names = "iface_clk", "core_clk";
 
 		/* DLL HSR settings. Refer go/hsr - <Target> DLL settings */
-		qcom,dll-hsr-list = <0x00076400 0x0 0x0 0x0 0x00040874>;
+		qcom,dll-hsr-list = <0x00076400 0x0 0x0 0x0 0x00040868>;
 
 		status = "disabled";
 	};
@@ -839,6 +839,7 @@
 		vdd_mx-supply = <&pm660_s2_level_ao>;
 		vdd_mx-uV = <RPM_SMD_REGULATOR_LEVEL_TURBO>;
 		vdd_pll-supply = <&L12A>;
+		qcom,smem-id = <421>;
 		qcom,vdd_pll = <1800000>;
 		vdd_mss-uV = <RPM_SMD_REGULATOR_LEVEL_TURBO>;
 
@@ -1086,6 +1087,13 @@
 			qcom,apr_tal_rpmsg {
 				qcom,smd-channels = "apr_audio_svc";
 			};
+
+			qcom,diag {
+				qcom,smd-channels = "DIAG";
+			};
+			qcom,diag_cntl {
+				qcom,smd-channels = "DIAG_CNTL";
+			};
 		};
 
 		rpm {
@@ -1281,12 +1289,14 @@
 			qcom,smdpkt-edge = "wcnss";
 			qcom,smdpkt-ch-name = "APPS_RIVA_BT_ACL";
 			qcom,smdpkt-dev-name = "smd2";
+			qcom,smdpkt-fragmented-read;
 		};
 
 		qcom,smdpkt-apps-riva-bt-cmd {
 			qcom,smdpkt-edge = "wcnss";
 			qcom,smdpkt-ch-name = "APPS_RIVA_BT_CMD";
 			qcom,smdpkt-dev-name = "smd3";
+			qcom,smdpkt-fragmented-read;
 		};
 
 		qcom,smdpkt-mbalbridge {
@@ -1476,7 +1486,7 @@
 			<&tlmm 79 0>, <&tlmm 80 0>;
 
 		clocks = <&rpmcc CXO_SMD_WLAN_CLK>,
-			 <&rpmcc RPM_SMD_RF_CLK2>,
+			 <&rpmcc RPM_SMD_RF_CLK1>,
 			 <&rpmcc SNOC_WCNSS_A_CLK>;
 
 		clock-names = "xo", "rf_clk", "snoc_wcnss";

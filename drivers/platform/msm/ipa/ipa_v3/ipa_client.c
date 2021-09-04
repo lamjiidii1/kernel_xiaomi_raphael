@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012-2021, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -67,6 +67,7 @@ int ipa3_enable_data_path(u32 clnt_hdl)
 		 * on other end from IPA hw.
 		 */
 		if ((ep->client == IPA_CLIENT_USB_DPL_CONS) ||
+				(ep->client == IPA_CLIENT_TPUT_CONS) ||
 				(ep->client == IPA_CLIENT_MHI_DPL_CONS) ||
 				(ep->client == IPA_CLIENT_MHI_QDSS_CONS)) {
 			holb_cfg.tmr_val = 0;
@@ -82,6 +83,11 @@ int ipa3_enable_data_path(u32 clnt_hdl)
 		} else if ((ipa3_ctx->ipa_hw_type == IPA_HW_v4_5) &&
 			(ep->client == IPA_CLIENT_USB_CONS)) {
 			holb_cfg.tmr_val = IPA_HOLB_TMR_VAL_4_5;
+			holb_cfg.en = IPA_HOLB_TMR_EN;
+		} else if (ipa3_ctx->ipa_hw_type == IPA_HW_v4_1  &&
+				ipa3_ctx->platform_type == IPA_PLAT_TYPE_APQ &&
+				ep->client == IPA_CLIENT_USB_CONS) {
+			holb_cfg.tmr_val = IPA_HOLB_TMR_VAL;
 			holb_cfg.en = IPA_HOLB_TMR_EN;
 		} else {
 			holb_cfg.en = IPA_HOLB_TMR_DIS;
